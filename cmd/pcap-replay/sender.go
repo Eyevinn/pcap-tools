@@ -76,18 +76,28 @@ func (u *udpHandler) AddPacket(dst string, udpPayload []byte, timestamp time.Tim
 			u.outfiles[dst] = fh
 		}
 	}
-	if bytes.Equal(udpPayload, u.lastPayload) {
+	extraBytes := len(udpPayload) % 188
+	if extraBytes == 0 && bytes.Equal(udpPayload, u.lastPayload) {
 		if u.firstSame == -1 {
 			u.firstSame = u.pktNr
 		}
-		u.nrRepeatedPkts++
-		u.pktNr++
-		return
+		allStuffing := true
+		for offset := 0; offset < len(udpPayload); offset += tsPacketSize {
+			pid := (uint16(udpPayload[offset+1]&0x1f) << 8) + uint16(udpPayload[offset+2])
+			if pid != 8191 {
+				allStuffing = false
+				break
+			}
+		}
+		if !allStuffing {
+			u.nrRepeatedPkts++
+			u.pktNr++
+			return
+		}
 	}
 	u.firstSame = -1
 
 	ok = true
-	extraBytes := len(udpPayload) % 188
 	switch extraBytes {
 	case 0: // One or more TS packets
 		// Do nothing
