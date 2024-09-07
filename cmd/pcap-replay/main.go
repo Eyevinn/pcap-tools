@@ -22,13 +22,14 @@ be mapped to new values. One can alternatively export the streams to files.
 `
 
 type options struct {
-	pcap      string
-	dstAddr   string
-	portMap   string
-	dstDir    string
-	logLevel  string
-	naiveLoop bool
-	version   bool
+	pcap           string
+	dstAddr        string
+	portMap        string
+	dstDir         string
+	logLevel       string
+	gapThresholdMS int
+	naiveLoop      bool
+	version        bool
 }
 
 func parseOptions() (*options, error) {
@@ -39,6 +40,7 @@ func parseOptions() (*options, error) {
 	flag.StringVar(&opts.portMap, "portmap", "", "Port mapping (e.g. 1234:5678,2345:6789)")
 	flag.BoolVar(&opts.naiveLoop, "naiveloop", false, "Loop the PCAP file in a naive way without rewrite of packets")
 	flag.StringVar(&opts.logLevel, "loglevel", "info", "Log level (info, debug, warn)")
+	flag.IntVar(&opts.gapThresholdMS, "gap", -1, "Report gap if capture times between packets exceeds this value in ms")
 	flag.BoolVar(&opts.version, "version", false, "Get version")
 
 	flag.Usage = func() {
@@ -62,11 +64,11 @@ func main() {
 		os.Exit(1)
 	}
 	if opts.version {
-		fmt.Printf("ew-pcap-replay %s\n", internal.GetVersion())
+		fmt.Printf("pcap-replay %s\n", internal.GetVersion())
 		os.Exit(0)
 	}
 	if opts.pcap == "" || (opts.dstAddr == "" && opts.dstDir == "") {
-		fmt.Fprintf(os.Stderr, "pcap and either addr or dir must be specified")
+		fmt.Fprintf(os.Stderr, "Error: pcap and either addr or dir must be specified\n\n")
 		flag.Usage()
 		os.Exit(1)
 	}
@@ -78,7 +80,7 @@ func main() {
 }
 
 func run(ctx context.Context, opts *options) error {
-	hdlr := createUDPHandler(opts.dstAddr, opts.dstDir)
+	hdlr := createUDPHandler(opts.dstAddr, opts.dstDir, opts.gapThresholdMS)
 	nrLoops := 1
 	portMap, err := parsePortMap(opts.portMap)
 	if err != nil {
@@ -93,7 +95,7 @@ func run(ctx context.Context, opts *options) error {
 			break
 		}
 		log.Infof("Loop %d done", nrLoops)
-		hdlr = createUDPHandler(opts.dstAddr, opts.dstDir)
+		hdlr = createUDPHandler(opts.dstAddr, opts.dstDir, opts.gapThresholdMS)
 		nrLoops++
 	}
 	return nil
