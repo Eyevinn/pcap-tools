@@ -134,7 +134,6 @@ func (u *udpHandler) AddPacket(dst string, udpPayload []byte, timestamp time.Tim
 		if u.dstDir != "" {
 			_, _ = u.outfiles[dst].Write(udpPayload)
 		}
-		u.pktNr++
 		timeDiff := timestamp.Sub(u.startTimeStamp)
 		if u.pktNr%10000 == 0 {
 			log.Infof("Read and sent %d packets %.3fs (%d repeated)", u.pktNr, timeDiff.Seconds(), u.nrRepeatedPkts)
