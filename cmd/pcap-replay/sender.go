@@ -29,12 +29,14 @@ type udpHandler struct {
 	lastPayload    []byte
 	startTimeStamp time.Time
 	startTime      time.Time
+	lastTime       time.Time // Used to detect gaps
 	firstSame      int
 	nrRepeatedPkts int
+	gapThresholdMS int
 	started        bool
 }
 
-func createUDPHandler(dstAddr string, dstDir string) *udpHandler {
+func createUDPHandler(dstAddr string, dstDir string, gapThresholdMS int) *udpHandler {
 	maxNrPackets := 1_000_000_000_000
 	maxNrSeconds := 1_000_000
 	uh := &udpHandler{
@@ -47,6 +49,7 @@ func createUDPHandler(dstAddr string, dstDir string) *udpHandler {
 		lastPayload:    make([]byte, 7*tsPacketSize),
 		started:        false,
 		nrRepeatedPkts: 0,
+		gapThresholdMS: gapThresholdMS,
 	}
 	return uh
 }
@@ -110,7 +113,16 @@ func (u *udpHandler) AddPacket(dst string, udpPayload []byte, timestamp time.Tim
 			u.streams[dst] = false
 		}
 	}
+	if u.gapThresholdMS > 0 {
+		if timestamp.Sub(u.lastTime) > time.Duration(u.gapThresholdMS)*time.Millisecond {
+			timeDiff := timestamp.Sub(u.lastTime)
+			if timeDiff > 2*time.Second {
+				log.Infof("gap detected: %.3fs after packet %d", timeDiff.Seconds(), u.pktNr)
+			}
+		}
+	}
 	u.pktNr++
+	u.lastTime = timestamp
 	if ok {
 		// Copy the full payload to lastPayload. First set the size to the same as udpPayload.
 		if len(udpPayload) > int(cap(u.lastPayload)) {
