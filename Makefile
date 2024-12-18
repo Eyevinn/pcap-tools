@@ -2,7 +2,7 @@
 all: lint test coverage build
 
 .PHONY: build
-build: pcap-replay
+build: pcap-replay pcap-unpack
 
 .PHONY: lint
 lint: prepare
@@ -14,6 +14,9 @@ prepare:
 	go mod tidy
 
 pcap-replay:
+	go build -ldflags "-X github.com/Eyevinn/pcap-tools/internal.commitVersion=$$(git describe --tags HEAD) -X github.com/Eyevinn/pcap-tools/internal.commitDate=$$(git log -1 --format=%ct)" -o out/$@ ./cmd/$@
+
+pcap-unpack:
 	go build -ldflags "-X github.com/Eyevinn/pcap-tools/internal.commitVersion=$$(git describe --tags HEAD) -X github.com/Eyevinn/pcap-tools/internal.commitDate=$$(git log -1 --format=%ct)" -o out/$@ ./cmd/$@
 
 .PHONY: test

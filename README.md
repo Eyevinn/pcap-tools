@@ -26,14 +26,14 @@ Tools for investigating and reusing tcpdump/Wireshark captures of TS streams.
 
 The tools available this far are:
 
-* pcap-replay
+* pcap-replay which replaces UDP streams from a pcap file and send to a specified address
+* pcap-unpack unpacks TS (or other UDP) streams from one or more pcap files
 
 ## Requirements
 
 This project uses Go version 1.22 or later.
 
 ## Installation / Usage
-
 
 Use the `Makefile`  to get build artifacts into the out directory,
 or use the standard go build steps:
@@ -43,6 +43,11 @@ go mod tidy
 cd cmd/pcap-replay
 go run .
 ```
+
+### Build on Windows
+
+If Makefile does not work, you can use the line from the Makefile to build the tools.
+To get the version correctly, note that the "-X" flags should be used.
 
 ## Development
 
