@@ -35,8 +35,21 @@ This project uses Go version 1.22 or later.
 
 ## Installation / Usage
 
-Use the `Makefile`  to get build artifacts into the out directory,
-or use the standard go build steps:
+The simplest way to get a working binary on your system is to run
+
+```sh
+go install github.com/Eyevinn/pcap-tools/cmd/pcap-unpack@latest
+go install github.com/Eyevinn/pcap-tools/cmd/pcap-replay@latest
+```
+
+When running the programs with `-h` option to get more information about
+how they work
+
+### Building for development
+
+You can alternatively checkout the repo and use the `Makefile`
+to get build artifacts into the out directory,
+or use the standard go steps to build and run in one go:
 
 ```sh
 go mod tidy
