@@ -7,7 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-- Nothing yet
+### Added
+
+- New -rtp flag to remove (12-byte) RTP headers in pcap-unpack
 
 ## [0.2.0] - 2024-12-18
 
