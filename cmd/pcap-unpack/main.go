@@ -23,6 +23,7 @@ The output is saved as files with names input_destAddress_port.ts
 
 type options struct {
 	dst     string
+	rtpHdr  bool
 	version bool
 }
 
@@ -35,6 +36,7 @@ func parseOptions(fs *flag.FlagSet, args []string) (*options, error) {
 
 	opts := options{}
 	fs.StringVar(&opts.dst, "dst", "", "Destination directory for output files")
+	fs.BoolVar(&opts.rtpHdr, "rtp", false, "Remove RTP headers UDP")
 	fs.BoolVar(&opts.version, "version", false, "Get mp4ff version")
 
 	err := fs.Parse(args[1:])
@@ -70,7 +72,7 @@ func run(args []string) error {
 	}
 
 	for _, pcapFile := range pcapFiles {
-		err := processPCAP(pcapFile, opts.dst)
+		err := processPCAP(pcapFile, opts.dst, opts.rtpHdr)
 		if err != nil {
 			return err
 		}

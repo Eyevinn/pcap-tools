@@ -11,7 +11,7 @@ import (
 	"github.com/google/gopacket/pcap"
 )
 
-func processPCAP(pcapFile string, dst string) error {
+func processPCAP(pcapFile string, dst string, rtpHdr bool) error {
 	if pcapFile == "" {
 		return fmt.Errorf("pcapFile is required")
 	}
@@ -21,10 +21,10 @@ func processPCAP(pcapFile string, dst string) error {
 	}
 	defer handle.Close()
 
-	return processPcapHandle(handle, pcapFile, dst)
+	return processPcapHandle(handle, pcapFile, dst, rtpHdr)
 }
 
-func processPcapHandle(handle *pcap.Handle, fileName, dstDir string) error {
+func processPcapHandle(handle *pcap.Handle, fileName, dstDir string, rtpHdr bool) error {
 	// Loop through packets from source
 	packetSource := gopacket.NewPacketSource(handle, handle.LinkType())
 	packetChannel := packetSource.Packets()
@@ -66,7 +66,11 @@ func processPcapHandle(handle *pcap.Handle, fileName, dstDir string) error {
 			udpDsts[dst] = fh
 		}
 		fh := udpDsts[dst]
-		_, err := fh.Write(udp.Payload)
+		payload := udp.Payload
+		if rtpHdr {
+			payload = payload[12:]
+		}
+		_, err := fh.Write(payload)
 		if err != nil {
 			return err
 		}
