@@ -10,10 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Output file names are now capture_192_168_1_1_5000.ts instead of capture.pcap_192.168.1.1_5000.ts
-
-### Added
-
-- New -rtp flag to remove (12-byte) RTP headers in pcap-unpack
+- RTP headers are automatically removed if 12-byte length and 13'th byte is sync byte
 
 ## [0.2.0] - 2024-12-18
 

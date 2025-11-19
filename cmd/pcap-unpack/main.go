@@ -15,15 +15,17 @@ const (
 
 var usg = `Usage of %s:
 
-%s unpacks UDP streams from from a Wireshark/tcpdump capture.
+%s unpacks UDP TS streams from from a Wireshark/tcpdump capture.
 
 The output is saved as files with names input_destAddress_port.ts
 (assuming that the streams are MPEG-2 TS streams).
+
+RTP headers are automatically removed if the UDP length modulo
+188 is 12 and the 13th byte is sync byte 0x47.
 `
 
 type options struct {
 	dst     string
-	rtpHdr  bool
 	version bool
 }
 
@@ -36,7 +38,6 @@ func parseOptions(fs *flag.FlagSet, args []string) (*options, error) {
 
 	opts := options{}
 	fs.StringVar(&opts.dst, "dst", "", "Destination directory for output files")
-	fs.BoolVar(&opts.rtpHdr, "rtp", false, "Remove RTP headers UDP")
 	fs.BoolVar(&opts.version, "version", false, "Get mp4ff version")
 
 	err := fs.Parse(args[1:])
@@ -72,7 +73,7 @@ func run(args []string) error {
 	}
 
 	for _, pcapFile := range pcapFiles {
-		err := processPCAP(pcapFile, opts.dst, opts.rtpHdr)
+		err := processPCAP(pcapFile, opts.dst)
 		if err != nil {
 			return err
 		}
