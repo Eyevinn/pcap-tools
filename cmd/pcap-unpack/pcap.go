@@ -5,6 +5,7 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/google/gopacket"
 	"github.com/google/gopacket/layers"
@@ -47,15 +48,19 @@ func processPcapHandle(handle *pcap.Handle, fileName, dstDir string, rtpHdr bool
 			continue
 		}
 		dstPort := int(udp.DstPort)
-		dst := fmt.Sprintf("%s_%d.ts", ip.DstIP, dstPort)
+		// Replace dots in IP address with underscores
+		ipStr := strings.ReplaceAll(ip.DstIP.String(), ".", "_")
+		dst := fmt.Sprintf("%s_%d.ts", ipStr, dstPort)
 		if _, ok := udpDsts[dst]; !ok {
 			var dstPath string
+			// Remove file extension from input filename (e.g., .pcap)
+			baseName := filepath.Base(fileName)
+			baseNameWithoutExt := strings.TrimSuffix(baseName, filepath.Ext(baseName))
 			switch {
 			case dstDir == "":
-				dstPath = fmt.Sprintf("%s_%s", fileName, dst)
+				dstPath = fmt.Sprintf("%s_%s", baseNameWithoutExt, dst)
 			default:
-				base := filepath.Base(fileName)
-				dstPath = filepath.Join(dstDir, fmt.Sprintf("%s_%s", base, dst))
+				dstPath = filepath.Join(dstDir, fmt.Sprintf("%s_%s", baseNameWithoutExt, dst))
 			}
 			fh, err := os.Create(dstPath)
 			if err != nil {
