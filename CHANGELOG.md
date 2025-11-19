@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- Nothing yet
+
+## [0.3.0] - 2025-11-19
+
 ### Changed
 
 - Output file names are now capture_192_168_1_1_5000.ts instead of capture.pcap_192.168.1.1_5000.ts
@@ -25,6 +29,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - New tool pcap-replay that resends all UDP packets carrying UDP/TS or UDP/RTP/TS streams
 - initial version of the repo
 
-[Unreleased]: https://github.com/Eyevinn/mp2ts-tools/releases/tag/v0.2.0...HEAD
+[Unreleased]: https://github.com/Eyevinn/mp2ts-tools/releases/tag/v0.3.0...HEAD
+[0.3.0]: https://github.com/Eyevinn/mp2ts-tools/releases/tag/v0.3.0...v0.3.0
 [0.2.0]: https://github.com/Eyevinn/mp2ts-tools/releases/tag/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/Eyevinn/mp2ts-tools/releases/tag/v0.1.0
