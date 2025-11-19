@@ -12,7 +12,7 @@ import (
 	"github.com/google/gopacket/pcap"
 )
 
-func processPCAP(pcapFile string, dst string, rtpHdr bool) error {
+func processPCAP(pcapFile string, dst string) error {
 	if pcapFile == "" {
 		return fmt.Errorf("pcapFile is required")
 	}
@@ -22,10 +22,10 @@ func processPCAP(pcapFile string, dst string, rtpHdr bool) error {
 	}
 	defer handle.Close()
 
-	return processPcapHandle(handle, pcapFile, dst, rtpHdr)
+	return processPcapHandle(handle, pcapFile, dst)
 }
 
-func processPcapHandle(handle *pcap.Handle, fileName, dstDir string, rtpHdr bool) error {
+func processPcapHandle(handle *pcap.Handle, fileName, dstDir string) error {
 	// Loop through packets from source
 	packetSource := gopacket.NewPacketSource(handle, handle.LinkType())
 	packetChannel := packetSource.Packets()
@@ -72,8 +72,18 @@ func processPcapHandle(handle *pcap.Handle, fileName, dstDir string, rtpHdr bool
 		}
 		fh := udpDsts[dst]
 		payload := udp.Payload
-		if rtpHdr {
-			payload = payload[12:]
+		hdrLen := len(payload) % 188
+
+		switch hdrLen {
+		case 0:
+			// Pure TS, do nothing
+		case 12:
+			// Assume RTP header of length 12 and remove it if sync byte found
+			if payload[12] == 0x47 {
+				payload = payload[12:]
+			}
+		default:
+			// Unknown header length, write anyway
 		}
 		_, err := fh.Write(payload)
 		if err != nil {
