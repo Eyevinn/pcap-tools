@@ -10,6 +10,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/Eyevinn/pcap-tools/internal"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -101,12 +102,9 @@ func (u *udpHandler) AddPacket(dst string, udpPayload []byte, timestamp time.Tim
 	u.firstSame = -1
 
 	ok = true
-	switch extraBytes {
-	case 0: // One or more TS packets
-		// Do nothing
-	case 12: // RTP. Remove 12-byte header
-		udpPayload = udpPayload[12:]
-	default:
+	if hdrLen := internal.RTPHeaderLen(udpPayload); hdrLen > 0 {
+		udpPayload = udpPayload[hdrLen:]
+	} else if extraBytes != 0 {
 		ok = false // only count, nothing else
 		if u.streams[dst] {
 			log.Infof("stream %q: udp payload size %d indicates not a TS stream", dst, len(udpPayload))

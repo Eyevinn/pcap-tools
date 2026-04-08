@@ -7,7 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-- Nothing yet
+### Changed
+
+- RTP header removal now parses full header (CSRC entries, extension headers) instead of assuming fixed 12 bytes
+- Shared RTP header parsing between pcap-unpack and pcap-replay
 
 ## [0.3.0] - 2025-11-19
 
