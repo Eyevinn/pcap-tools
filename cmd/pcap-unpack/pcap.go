@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/Eyevinn/pcap-tools/internal"
 	"github.com/google/gopacket"
 	"github.com/google/gopacket/layers"
 	"github.com/google/gopacket/pcap"
@@ -72,18 +73,8 @@ func processPcapHandle(handle *pcap.Handle, fileName, dstDir string) error {
 		}
 		fh := udpDsts[dst]
 		payload := udp.Payload
-		hdrLen := len(payload) % 188
-
-		switch hdrLen {
-		case 0:
-			// Pure TS, do nothing
-		case 12:
-			// Assume RTP header of length 12 and remove it if sync byte found
-			if payload[12] == 0x47 {
-				payload = payload[12:]
-			}
-		default:
-			// Unknown header length, write anyway
+		if hdrLen := internal.RTPHeaderLen(payload); hdrLen > 0 {
+			payload = payload[hdrLen:]
 		}
 		_, err := fh.Write(payload)
 		if err != nil {
