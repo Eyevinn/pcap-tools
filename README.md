@@ -12,7 +12,6 @@ Tools for PCAP files with TS streams
 ![Test](https://github.com/Eyevinn/mp2ts-tools/workflows/Go/badge.svg)
 [![golangci-lint](https://github.com/Eyevinn/mp2ts-tools/actions/workflows/golangci-lint.yml/badge.svg)](https://github.com/Eyevinn/mp2ts-tools/actions/workflows/golangci-lint.yml)
 [![GoDoc](https://godoc.org/github.com/Eyevinn/mp2ts-tools?status.svg)](http://godoc.org/github.com/Eyevinn/mp2ts-tools)
-[![Go Report Card](https://goreportcard.com/badge/github.com/Eyevinn/mp2ts-tools)](https://goreportcard.com/report/github.com/Eyevinn/mp2ts-tools)
 [![github release](https://img.shields.io/github/v/release/Eyevinn/pcap-tools?style=flat-square)](https://github.com/Eyevinn/pcap-tools/releases)
 [![license](https://img.shields.io/github/license/eyevinn/pcap-tools.svg?style=flat-square)](LICENSE)
 
