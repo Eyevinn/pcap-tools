@@ -57,8 +57,8 @@ func processPcapHandle(handle *pcap.Handle, fileName, dstDir string) error {
 			// Remove file extension from input filename (e.g., .pcap)
 			baseName := filepath.Base(fileName)
 			baseNameWithoutExt := strings.TrimSuffix(baseName, filepath.Ext(baseName))
-			switch {
-			case dstDir == "":
+			switch dstDir {
+			case "":
 				dstPath = fmt.Sprintf("%s_%s", baseNameWithoutExt, dst)
 			default:
 				dstPath = filepath.Join(dstDir, fmt.Sprintf("%s_%s", baseNameWithoutExt, dst))
