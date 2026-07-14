@@ -66,8 +66,8 @@ func (u *udpHandler) AddPacket(dst string, udpPayload []byte, timestamp time.Tim
 		u.streams[dst] = true
 		log.Infof("Found new UDP stream %s", dst)
 		if u.dstDir != "" {
-			dstFileName := strings.Replace(dst, ".", "_", -1)
-			dstFileName = strings.Replace(dstFileName, ":", "_", -1) + ".ts"
+			dstFileName := strings.ReplaceAll(dst, ".", "_")
+			dstFileName = strings.ReplaceAll(dstFileName, ":", "_") + ".ts"
 			dstFilePath := path.Join(u.dstDir, dstFileName)
 			err := os.MkdirAll(u.dstDir, os.ModePerm)
 			if err != nil {
